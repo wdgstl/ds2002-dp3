@@ -8,6 +8,7 @@ url = "https://sqs.us-east-1.amazonaws.com/440848399208/spq4pq"
 sqs = boto3.client('sqs')
 
 message = {}
+handles = []
 
 def delete_message(handle):
     try:
@@ -45,7 +46,10 @@ def get_message():
             # Print the message attributes - this is what you want to work with to reassemble the message
             print(f"Order: {order}")
             print(f"Word: {word}")
+
+
             message[order] = word
+            handles.append(handle)
 
         # If there is no message in the queue, print a message and exit    
         else:
@@ -58,12 +62,18 @@ def get_message():
 
 # Trigger the function
 if __name__ == "__main__":
+
     for i in range(10):
         get_message()
+    
     sorted_message = dict(sorted(message.items()))
     out = ""
     for part in sorted_message.values():
         out += part 
         out += " "
-    print(out)
+    print(f'\nRearranged Message: {out[:-1]}')
+
+     #delete messages
+    for handle in handles:
+        delete_message(handle)
 
